@@ -1,0 +1,30 @@
+# Default values for Gateway API (NGINX).
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imagePullSecrets: []
+  nodeSelector: {}
+  commonLabels: {}
+  priorityClassName: ""
+
+gatewayClass:
+  name: nginx
+  controller: k8s.io/nginx
+
+gateway:
+  name: default-gateway
+  namespace: gateway-api
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+    - name: https
+      port: 443
+      protocol: HTTPS
+
+# Espaço reservado para futuras portas (Postgres, RabbitMQ, Redis, etc.)
+# Exemplo:
+# - name: postgres
+#   port: 5432
+#   protocol: TCP
