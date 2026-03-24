@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gateway-api
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  destination:
+    namespace: gateway-api
+    server: https://kubernetes.default.svc
+  source:
+    chart: nginx-gateway-fabric
+    repoURL: oci://ghcr.io/nginx/charts/nginx-gateway-fabric
+    targetRevision: 2.4.2
+    helm:
+      releaseName: nginx-gateway-fabric
+      valuesObject:
+        certGenerator:
+          enable: false
+        nginxGateway:
+          gwAPIExperimentalFeatures:
+            enable: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: ServiceAccount
+      name: nginx-gateway-fabric-cert-generator
+      jsonPointers: ["/metadata/annotations"]
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: nginx-gateway-fabric-cert-generator
+      jsonPointers: ["/metadata/annotations"]
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: nginx-gateway-fabric-cert-generator
+      jsonPointers: ["/metadata/annotations"]
+    - group: batch
+      kind: Job
+      name: nginx-gateway-fabric-cert-generator
+      jsonPointers: ["/metadata/annotations"]

@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: postgres-gateway
+  namespace: gateway-api
+spec:
+  gatewayClassName: nginx
+  listeners:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: postgres-tls
+      protocol: TCP
+      port: 5433
+      allowedRoutes:
+        namespaces:
+          from: Same

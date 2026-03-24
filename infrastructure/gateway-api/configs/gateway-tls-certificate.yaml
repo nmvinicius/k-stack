@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gateway-tls
+  namespace: gateway-api
+spec:
+  secretName: gateway-tls
+  duration: 8760h
+  renewBefore: 720h
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.k8s.local"
+    - localhost
+  privateKey:
+    algorithm: ECDSA
+    size: 256

@@ -1,28 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root
+  name: cert-manager-configs
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: infrastructure
+  destination:
+    namespace: cert-manager
+    server: https://kubernetes.default.svc
   source:
     repoURL: git@github.com:nmvinicius/k-stack.git
     targetRevision: HEAD
-    path: infrastructure
-    directory:
-      recurse: false
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
+    path: infrastructure/cert-manager/configs
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
-    retry:
-      limit: 3
-      backoff:
-        duration: 10s
-        factor: 2
-        maxDuration: 3m
