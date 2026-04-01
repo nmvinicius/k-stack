@@ -1,0 +1,11 @@
+# Issuer namespace-scoped que usa o CA acima para assinar o server-tls.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ngf-internal-issuer
+  namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  ca:
+    secretName: agent-tls

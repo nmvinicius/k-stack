@@ -28,31 +28,45 @@ infrastructure/
 ├── cert-manager.yaml                    # Multi-source: Helm + configs (wave -3)
 ├── cert-manager/
 │   └── configs/
-│       ├── self-signed-cluster-issuer.yaml
-│       └── cluster-internal-ca.yaml
+│       ├── selfsigned-issuer/
+│       │   └── cluster-issuer.yaml
+│       └── cluster-internal-ca/
+│           ├── certificate-ca.yaml
+│           └── cluster-issuer.yaml
 │
 ├── gateway-crds.yaml                    # CRDs (wave -2)
 ├── gateway.yaml                         # Multi-source: Helm + configs (wave -1)
 ├── gateway/
 │   └── configs/
-│       ├── http-https-gateway.yaml
-│       ├── postgres-gateway.yaml
-│       ├── gateway-tls.yaml
-│       ├── ngf-internal-tls.yaml
-│       └── argocd-httproute.yaml
+│       ├── argocd/
+│       │   ├── httproute.yaml
+│       │   └── httproute-redirect.yaml
+│       ├── gateway-tls/
+│       │   └── certificate.yaml
+│       ├── http-https-gateway/
+│       │   └── gateway.yaml
+│       ├── ngf-internal-tls/
+│       │   ├── certificate-ca.yaml
+│       │   ├── certificate.yaml
+│       │   └── issuer.yaml
+│       └── postgres-gateway/
+│           └── gateway.yaml
 │
 ├── trust-manager.yaml                   # Multi-source: Helm + configs (wave -1)
 ├── trust-manager/
 │   └── configs/
-│       └── cluster-ca-bundle.yaml
+│       └── cluster-internal-ca/
+│           └── bundle.yaml
 │
 ├── argocd.yaml                          # Configs (wave 0)
 └── argocd/
     └── configs/
-        ├── server-cert.yaml
-        ├── backend-tls-policy.yaml
-        ├── reference-grant.yaml
-        └── network-policy.yaml
+        ├── argocd-server/
+        │   ├── certificate.yaml
+        │   ├── backend-tls-policy.yaml
+        │   └── reference-grant.yaml
+        └── repo-server/
+            └── network-policy.yaml
 ```
 
 ## Pré-requisitos

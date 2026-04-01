@@ -39,16 +39,19 @@ infrastructure/
 ├── stackgres.yaml            # Application multi-source (wave apropriado)
 └── stackgres/
     └── configs/
-        ├── server-cert.yaml          # Certificate name: stackgres-server
-        ├── backend-tls-policy.yaml   # BackendTLSPolicy name: stackgres-server
-        └── ...                       # Todos com sync-wave: "1"
+        └── stackgres-server/         # Pasta = conceito/serviço
+            ├── certificate.yaml      # Kind como nome do arquivo
+            ├── backend-tls-policy.yaml
+            └── reference-grant.yaml  # Todos com sync-wave: "1"
 ```
 
 Se o componente precisa de HTTPRoute, adicionar em `infrastructure/gateway/configs/`:
 
 ```
 infrastructure/gateway/configs/
-└── stackgres-httproute.yaml   # HTTPRoute name: stackgres / stackgres-redirect
+└── stackgres/
+    ├── httproute.yaml            # Kind padrão — sem sufixo
+    └── httproute-redirect.yaml   # Variante — com sufixo
 ```
 
 ### Template de Application ArgoCD
@@ -79,6 +82,8 @@ spec:
     - repoURL: git@github.com:nmvinicius/k-stack.git
       targetRevision: HEAD
       path: infrastructure/<componente>/configs
+      directory:
+        recurse: true
   syncPolicy:
     automated:
       selfHeal: true
@@ -101,14 +106,25 @@ Resources dentro de `configs/` devem ter `argocd.argoproj.io/sync-wave: "1"` par
 kubectl get certificate,backendtlspolicy,referencegrant argocd-server -n argocd
 ```
 
+**Estrutura de pastas configs/**: concept folders + nomes de arquivo por Kind:
+
+```
+configs/
+└── <conceito>/              # resource name ou agrupamento lógico
+    ├── certificate.yaml     # Kind padrão (leaf cert) — sem sufixo
+    ├── certificate-ca.yaml  # Variante (CA cert) — com sufixo
+    ├── secret.yaml          # Opaque (padrão) — sem sufixo
+    └── secret-tls.yaml      # TLS variant — com sufixo
+```
+
 | Padrão | Exemplo |
 |--------|---------|
+| Pasta de configs | nome do conceito/serviço (`argocd-server/`, `ngf-internal-tls/`) |
+| Arquivo | Kind em kebab-case (`certificate.yaml`, `backend-tls-policy.yaml`) |
+| Sufixo de variante | tipo não-padrão (`certificate-ca.yaml`, `httproute-redirect.yaml`) |
 | Resources de um serviço | mesmo nome base (`argocd-server`) |
 | Application | nome do componente (`cert-manager`, `gateway`, `argocd`) |
-| Resources padrão do app | manter nome original (`argocd-cmd-params-cm`) |
-| Secrets TLS | `<recurso>-tls` (`gateway-tls`) |
 | Gateways | descreve protocolos (`http-https-gateway`, `postgres-gateway`) |
-| Arquivos de configs | descrevem conteúdo, sem prefixo redundante (`server-cert.yaml`, não `argocd-server-cert.yaml`) |
 
 ## Armadilhas Comuns
 
@@ -116,8 +132,9 @@ kubectl get certificate,backendtlspolicy,referencegrant argocd-server -n argocd
 - **Ordem de sources**: ao usar OCI registries como `repoURL`, o campo `chart` é obrigatório; não usar `path`.
 - **AppProject antes de tudo**: qualquer nova Application deve usar `project: infrastructure`; só a root app usa `project: default`.
 - **`recurse: false`** na root app: o diretório `infrastructure/` é lido sem recursão — subdiretórios (`cert-manager/configs/`) são gerenciados via `sources` das Applications.
+- **`directory.recurse: true`** nas sources Git das Applications: necessário para ler concept folders dentro de `configs/`.
 - **`sync-wave: "1"`** em resources de configs: garante que o controller do Helm chart esteja healthy antes de aplicar configs (ClusterIssuers, Certificates, etc.).
-- **ReferenceGrant**: fica no namespace do destino (ex: `argocd/configs/reference-grant.yaml`), não no namespace do gateway.
+- **ReferenceGrant**: fica no namespace do destino (ex: `argocd/configs/argocd-server/reference-grant.yaml`), não no namespace do gateway.
 
 ## Agentes disponíveis
 

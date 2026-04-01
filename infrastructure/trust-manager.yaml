@@ -21,6 +21,8 @@ spec:
     - repoURL: git@github.com:nmvinicius/k-stack.git
       targetRevision: HEAD
       path: infrastructure/trust-manager/configs
+      directory:
+        recurse: true
   syncPolicy:
     automated:
       selfHeal: true

@@ -1,0 +1,23 @@
+# Cert do gRPC server do control plane — agents conectam via este nome DNS.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ngf-server-tls
+  namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  secretName: server-tls
+  duration: 8760h
+  renewBefore: 720h
+  issuerRef:
+    name: ngf-internal-issuer
+    kind: Issuer
+  dnsNames:
+    - nginx-gateway-fabric.gateway-api.svc.cluster.local
+    - nginx-gateway-fabric.gateway-api.svc
+    - nginx-gateway-fabric.gateway-api
+    - localhost
+  privateKey:
+    algorithm: ECDSA
+    size: 256

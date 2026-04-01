@@ -1,0 +1,21 @@
+# CA usado pelo NGF para assinar os certs dos NGINX Agents dinamicamente.
+# A chave privada desta CA fica no secret agent-tls, lido pelo control plane.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ngf-agent-ca
+  namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  isCA: true
+  secretName: agent-tls
+  commonName: ngf-agent-ca
+  duration: 87600h
+  renewBefore: 720h
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
