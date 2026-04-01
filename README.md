@@ -10,14 +10,11 @@ Padrão **App-of-Apps** com sync waves para orquestrar a ordem de deploy:
 | Sync Wave | Application | Descrição |
 |-----------|-------------|-----------|
 | `-5` | `infrastructure` | AppProject ArgoCD |
-| `-3` | `cert-manager` | Helm chart cert-manager (CRDs + controller) |
-| `-2` | `cert-manager-configs` | ClusterIssuer self-signed + CA interno |
+| `-3` | `cert-manager` | cert-manager + PKI (multi-source) |
 | `-2` | `gateway-crds` | CRDs do Gateway API (experimental) |
-| `-1` | `gateway` | Helm chart NGINX Gateway Fabric |
-| `-1` | `trust-manager` | Helm chart trust-manager |
-| `0` | `trust-manager-configs` | Bundle de distribuição do CA |
-| `0` | `gateway-configs` | Gateways (HTTP/HTTPS/TCP) + TLS + HTTPRoutes |
-| `0` | `argocd-configs` | Certificates, BackendTLSPolicy, NetworkPolicy |
+| `-1` | `gateway` | NGINX Gateway Fabric + configs (multi-source) |
+| `-1` | `trust-manager` | trust-manager + CA bundle (multi-source) |
+| `0` | `argocd` | Certificates, BackendTLSPolicy, NetworkPolicy |
 
 ## Estrutura do Repositório
 
@@ -28,24 +25,15 @@ bootstrap/
 infrastructure/
 ├── project.yaml                         # AppProject (wave -5)
 │
-├── cert-manager.yaml                    # Application Helm (wave -3)
-├── cert-manager-configs.yaml            # Application configs (wave -2)
+├── cert-manager.yaml                    # Multi-source: Helm + configs (wave -3)
 ├── cert-manager/
 │   └── configs/
 │       ├── self-signed-cluster-issuer.yaml
 │       └── cluster-internal-ca.yaml
 │
-├── trust-manager.yaml                   # Application Helm (wave -1)
-├── trust-manager-configs.yaml           # Application configs (wave 0)
-├── trust-manager/
-│   └── configs/
-│       └── cluster-ca-bundle.yaml
-│
-├── gateway-crds.yaml                    # Application CRDs (wave -2)
-├── gateway.yaml                         # Application Helm (wave -1)
-├── gateway-configs.yaml                 # Application configs (wave 0)
+├── gateway-crds.yaml                    # CRDs (wave -2)
+├── gateway.yaml                         # Multi-source: Helm + configs (wave -1)
 ├── gateway/
-│   ├── README.md
 │   └── configs/
 │       ├── http-https-gateway.yaml
 │       ├── postgres-gateway.yaml
@@ -53,7 +41,12 @@ infrastructure/
 │       ├── ngf-internal-tls.yaml
 │       └── argocd-httproute.yaml
 │
-├── argocd-configs.yaml                  # Application configs (wave 0)
+├── trust-manager.yaml                   # Multi-source: Helm + configs (wave -1)
+├── trust-manager/
+│   └── configs/
+│       └── cluster-ca-bundle.yaml
+│
+├── argocd.yaml                          # Configs (wave 0)
 └── argocd/
     └── configs/
         ├── server-cert.yaml
@@ -78,10 +71,10 @@ kubectl apply -f bootstrap/root-app.yaml
 
 O ArgoCD irá, em ordem:
 1. Criar o AppProject `infrastructure`
-2. Instalar cert-manager e CRDs do Gateway API
-3. Criar ClusterIssuers e CA interno
-4. Instalar NGINX Gateway Fabric e trust-manager
-5. Configurar Gateways, TLS, HTTPRoutes e distribuir o CA bundle
+2. Instalar cert-manager + criar PKI (ClusterIssuers, CA)
+3. Instalar CRDs do Gateway API
+4. Instalar NGINX Gateway Fabric + Gateways, TLS, HTTPRoutes
+5. Instalar trust-manager + distribuir CA bundle
 6. Aplicar configs do ArgoCD (certificate, TLS policy, network policy)
 
 ## Componentes
@@ -118,8 +111,7 @@ kubectl get certificate,backendtlspolicy,referencegrant argocd-server -n argocd
 | Padrão | Exemplo |
 |--------|---------|
 | Resources de um serviço | mesmo nome (`argocd-server`) |
-| Application Helm | nome do componente (`cert-manager`, `gateway`) |
-| Application de configs | sufixo `-configs` (`cert-manager-configs`) |
+| Application | nome do componente (`cert-manager`, `gateway`, `argocd`) |
 | Resources padrão do app | manter nome original (`argocd-cmd-params-cm`) |
 
 ---

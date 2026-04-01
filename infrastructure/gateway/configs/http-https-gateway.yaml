@@ -3,6 +3,8 @@ kind: Gateway
 metadata:
   name: http-https-gateway
   namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   gatewayClassName: nginx
   listeners:

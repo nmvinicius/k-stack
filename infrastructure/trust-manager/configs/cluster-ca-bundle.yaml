@@ -7,6 +7,8 @@ apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
   name: cluster-internal-ca
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   sources:
     - secret:

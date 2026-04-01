@@ -4,23 +4,21 @@ Repositório GitOps para cluster Kubernetes local (Minikube + MetalLB) gerenciad
 Padrão **App-of-Apps**: um único `kubectl apply -f bootstrap/root-app.yaml` bootstrapa toda a infraestrutura.  
 Filosofia: **compliance by design** — TLS end-to-end, PKI interna, network policies.
 
-> Veja [README.md](../README.md) para visão geral e [infrastructure/gateway/README.md](../infrastructure/gateway/README.md) para detalhes do NGINX Gateway Fabric.
+> Veja [README.md](../README.md) para visão geral do projeto.
 
 ## Arquitetura
 
 | Sync Wave | Application | Tipo |
 |-----------|-------------|------|
 | `-5` | `infrastructure` (AppProject) | `AppProject` |
-| `-3` | `cert-manager` | Helm chart |
-| `-2` | `cert-manager-configs` | Git path |
-| `-2` | `gateway-crds` | Kustomize (GitHub) |
-| `-1` | `gateway` | Helm chart OCI |
-| `-1` | `trust-manager` | Helm chart |
-| `0` | `trust-manager-configs` | Git path |
-| `0` | `gateway-configs` | Git path |
-| `0` | `argocd-configs` | Git path |
+| `-3` | `cert-manager` | Multi-source (Helm + Git) |
+| `-2` | `gateway-crds` | Git path (GitHub) |
+| `-1` | `gateway` | Multi-source (Helm OCI + Git) |
+| `-1` | `trust-manager` | Multi-source (Helm + Git) |
+| `0` | `argocd` | Git path |
 
 **Regra**: CRDs/controllers sempre em wave anterior às configs que os utilizam.
+**Multi-source**: Helm + configs no mesmo Application; configs usam `sync-wave: "1"` para garantir que o controller esteja healthy.
 
 ## Bootstrap
 
@@ -38,13 +36,12 @@ Para adicionar um componente (ex: `stackgres`), seguir este padrão:
 
 ```
 infrastructure/
-├── stackgres.yaml            # Application Helm (wave apropriado)
-├── stackgres-configs.yaml    # Application configs (wave +1 após o Helm)
+├── stackgres.yaml            # Application multi-source (wave apropriado)
 └── stackgres/
     └── configs/
         ├── server-cert.yaml          # Certificate name: stackgres-server
         ├── backend-tls-policy.yaml   # BackendTLSPolicy name: stackgres-server
-        └── ...
+        └── ...                       # Todos com sync-wave: "1"
 ```
 
 Se o componente precisa de HTTPRoute, adicionar em `infrastructure/gateway/configs/`:
@@ -73,11 +70,22 @@ spec:
   destination:
     namespace: <namespace-do-componente>
     server: https://kubernetes.default.svc
+  sources:                                    # Multi-source
+    - chart: <chart-name>                     # Helm source
+      repoURL: <registry>
+      targetRevision: <version>
+      helm:
+        valuesObject: {}
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/<componente>/configs
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
 ```
+
+Resources dentro de `configs/` devem ter `argocd.argoproj.io/sync-wave: "1"` para aplicar após o Helm chart.
 
 ### Valores Helm
 
@@ -96,8 +104,7 @@ kubectl get certificate,backendtlspolicy,referencegrant argocd-server -n argocd
 | Padrão | Exemplo |
 |--------|---------|
 | Resources de um serviço | mesmo nome base (`argocd-server`) |
-| Application Helm | nome do componente (`cert-manager`, `gateway`) |
-| Application de configs | sufixo `-configs` (`cert-manager-configs`) |
+| Application | nome do componente (`cert-manager`, `gateway`, `argocd`) |
 | Resources padrão do app | manter nome original (`argocd-cmd-params-cm`) |
 | Secrets TLS | `<recurso>-tls` (`gateway-tls`) |
 | Gateways | descreve protocolos (`http-https-gateway`, `postgres-gateway`) |
@@ -108,7 +115,8 @@ kubectl get certificate,backendtlspolicy,referencegrant argocd-server -n argocd
 - **`ignoreDifferences`**: necessário para recursos que sofrem drift gerenciado externamente (ex: `cert-generator` do gateway). Adicionar quando um resource controller sobrescreve campos constantemente.
 - **Ordem de sources**: ao usar OCI registries como `repoURL`, o campo `chart` é obrigatório; não usar `path`.
 - **AppProject antes de tudo**: qualquer nova Application deve usar `project: infrastructure`; só a root app usa `project: default`.
-- **`recurse: false`** na root app: o diretório `infrastructure/` é lido sem recursão — subdiretórios (`cert-manager/configs/`) são gerenciados por Applications separadas.
+- **`recurse: false`** na root app: o diretório `infrastructure/` é lido sem recursão — subdiretórios (`cert-manager/configs/`) são gerenciados via `sources` das Applications.
+- **`sync-wave: "1"`** em resources de configs: garante que o controller do Helm chart esteja healthy antes de aplicar configs (ClusterIssuers, Certificates, etc.).
 - **ReferenceGrant**: fica no namespace do destino (ex: `argocd/configs/reference-grant.yaml`), não no namespace do gateway.
 
 ## Agentes disponíveis

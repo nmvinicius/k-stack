@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: trust-manager-configs
+  name: argocd
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -10,12 +10,12 @@ metadata:
 spec:
   project: infrastructure
   destination:
-    namespace: cert-manager
+    namespace: argocd
     server: https://kubernetes.default.svc
   source:
     repoURL: git@github.com:nmvinicius/k-stack.git
     targetRevision: HEAD
-    path: infrastructure/trust-manager/configs
+    path: infrastructure/argocd/configs
   syncPolicy:
     automated:
       selfHeal: true

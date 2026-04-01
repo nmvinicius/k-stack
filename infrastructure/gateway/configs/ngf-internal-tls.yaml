@@ -6,6 +6,8 @@ kind: Certificate
 metadata:
   name: ngf-agent-ca
   namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   isCA: true
   secretName: agent-tls
@@ -25,6 +27,8 @@ kind: Issuer
 metadata:
   name: ngf-internal-issuer
   namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   ca:
     secretName: agent-tls
@@ -35,6 +39,8 @@ kind: Certificate
 metadata:
   name: ngf-server-tls
   namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   secretName: server-tls
   duration: 8760h

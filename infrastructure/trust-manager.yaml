@@ -12,12 +12,15 @@ spec:
   destination:
     namespace: cert-manager
     server: https://kubernetes.default.svc
-  source:
-    chart: trust-manager
-    repoURL: https://charts.jetstack.io
-    targetRevision: 0.14.0
-    helm:
-      releaseName: trust-manager
+  sources:
+    - chart: trust-manager
+      repoURL: https://charts.jetstack.io
+      targetRevision: 0.14.0
+      helm:
+        releaseName: trust-manager
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/trust-manager/configs
   syncPolicy:
     automated:
       selfHeal: true

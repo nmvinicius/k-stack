@@ -3,6 +3,8 @@ kind: Certificate
 metadata:
   name: gateway-tls
   namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   secretName: gateway-tls
   duration: 8760h

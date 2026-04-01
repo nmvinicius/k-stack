@@ -12,18 +12,21 @@ spec:
   destination:
     namespace: gateway-api
     server: https://kubernetes.default.svc
-  source:
-    chart: nginx-gateway-fabric
-    repoURL: oci://ghcr.io/nginx/charts/nginx-gateway-fabric
-    targetRevision: 2.4.2
-    helm:
-      releaseName: nginx-gateway-fabric
-      valuesObject:
-        certGenerator:
-          enable: false
-        nginxGateway:
-          gwAPIExperimentalFeatures:
-            enable: true
+  sources:
+    - chart: nginx-gateway-fabric
+      repoURL: oci://ghcr.io/nginx/charts/nginx-gateway-fabric
+      targetRevision: 2.4.2
+      helm:
+        releaseName: nginx-gateway-fabric
+        valuesObject:
+          certGenerator:
+            enable: false
+          nginxGateway:
+            gwAPIExperimentalFeatures:
+              enable: true
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/gateway/configs
   syncPolicy:
     automated:
       selfHeal: true
