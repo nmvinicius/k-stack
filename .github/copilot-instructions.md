@@ -83,7 +83,7 @@ spec:
 
 - Use `values: |-` (string multiline) para charts que requerem formato de string (ex: `cert-manager`)
 - Use `valuesObject:` (YAML estruturado) para charts compatíveis (ex: `gateway`)
-- O diretório `values/` contém os values completos dos charts — use como **referência apenas**, não são referenciados pelas Applications
+- Para consultar os values padrão de um chart: `helm show values <chart>`
 
 ### Nomenclatura
 

@@ -61,10 +61,6 @@ infrastructure/
         ├── reference-grant.yaml
         ├── cmd-params.yaml
         └── network-policy.yaml
-
-values/                                  # Referência dos values oficiais
-├── cert-manager.yaml
-└── gateway-api.yaml
 ```
 
 ## Pré-requisitos
