@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: git@github.com:nmvinicius/k-stack.git
     targetRevision: HEAD
-    path: argocd
+    path: infrastructure/argocd/configs
   syncPolicy:
     automated:
       selfHeal: true

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gateway-api-configs
+  name: gateway-configs
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: git@github.com:nmvinicius/k-stack.git
     targetRevision: HEAD
-    path: infrastructure/gateway-api/configs
+    path: infrastructure/gateway/configs
   syncPolicy:
     automated:
       selfHeal: true
