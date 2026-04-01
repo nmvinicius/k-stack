@@ -59,7 +59,6 @@ infrastructure/
         ├── server-cert.yaml
         ├── backend-tls-policy.yaml
         ├── reference-grant.yaml
-        ├── cmd-params.yaml
         └── network-policy.yaml
 ```
 

@@ -1,9 +1,0 @@
-# Habilita modo insecure no argocd-server para que o gateway possa
-# enviar requisições HTTP sem ser redirecionado para HTTPS internamente.
-# O TLS é terminado no NGINX Gateway Fabric.
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-cmd-params-cm
-  namespace: argocd
-data: {}
