@@ -11,8 +11,7 @@ Padrão **App-of-Apps** com sync waves para orquestrar a ordem de deploy:
 |-----------|-------------|-----------|
 | `-5` | `infrastructure` | AppProject ArgoCD |
 | `-3` | `cert-manager` | cert-manager + PKI (multi-source) |
-| `-2` | `gateway-crds` | CRDs do Gateway API (experimental) |
-| `-1` | `gateway` | NGINX Gateway Fabric + configs (multi-source) |
+| `-2` | `gateway` | CRDs + NGINX Gateway Fabric + configs (multi-source) |
 | `-1` | `trust-manager` | trust-manager + CA bundle (multi-source) |
 | `0` | `argocd` | Certificates, BackendTLSPolicy, NetworkPolicy |
 
@@ -34,8 +33,7 @@ infrastructure/
 │           ├── certificate-ca.yaml
 │           └── cluster-issuer.yaml
 │
-├── gateway-crds.yaml                    # CRDs (wave -2)
-├── gateway.yaml                         # Multi-source: Helm + configs (wave -1)
+├── gateway.yaml                         # Multi-source: CRDs + Helm + configs (wave -2)
 ├── gateway/
 │   └── configs/
 │       ├── argocd/

@@ -1,23 +1,28 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: gateway-crds
+  name: prometheus
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-2"
+    argocd.argoproj.io/sync-wave: "1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: infrastructure
   destination:
+    namespace: monitoring
     server: https://kubernetes.default.svc
   source:
-    repoURL: https://github.com/nginx/nginx-gateway-fabric
-    targetRevision: v2.4.2
-    path: config/crd/gateway-api/experimental
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 82.*
+    helm:
+      releaseName: prometheus
+      valuesObject: {}
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
     syncOptions:
+      - CreateNamespace=true
       - ServerSideApply=true

@@ -12,8 +12,7 @@ Filosofia: **compliance by design** — TLS end-to-end, PKI interna, network pol
 |-----------|-------------|------|
 | `-5` | `infrastructure` (AppProject) | `AppProject` |
 | `-3` | `cert-manager` | Multi-source (Helm + Git) |
-| `-2` | `gateway-crds` | Git path (GitHub) |
-| `-1` | `gateway` | Multi-source (Helm OCI + Git) |
+| `-2` | `gateway` | Multi-source (Git CRDs + Helm OCI + Git) |
 | `-1` | `trust-manager` | Multi-source (Helm + Git) |
 | `0` | `argocd` | Git path |
 

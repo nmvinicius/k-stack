@@ -4,7 +4,7 @@ metadata:
   name: gateway
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "-2"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,6 +13,9 @@ spec:
     namespace: gateway-api
     server: https://kubernetes.default.svc
   sources:
+    - repoURL: https://github.com/nginx/nginx-gateway-fabric
+      targetRevision: v2.4.2
+      path: config/crd/gateway-api/experimental
     - chart: nginx-gateway-fabric
       repoURL: oci://ghcr.io/nginx/charts/nginx-gateway-fabric
       targetRevision: 2.4.2
