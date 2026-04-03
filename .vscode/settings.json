@@ -3,6 +3,7 @@
         "argocd",
         "argoproj",
         "finalizer",
+        "grafana",
         "prometheus"
     ]
 }

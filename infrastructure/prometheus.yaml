@@ -12,13 +12,42 @@ spec:
   destination:
     namespace: monitoring
     server: https://kubernetes.default.svc
-  source:
-    chart: kube-prometheus-stack
-    repoURL: https://prometheus-community.github.io/helm-charts
-    targetRevision: 82.*
-    helm:
-      releaseName: prometheus
-      valuesObject: {}
+  sources:
+    - chart: kube-prometheus-stack
+      repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 82.*
+      helm:
+        releaseName: prometheus
+        valuesObject:
+          grafana:
+            service:
+              port: 443
+              targetPort: 3000
+            grafana.ini:
+              server:
+                protocol: https
+                cert_file: /etc/grafana/ssl/tls.crt
+                cert_key: /etc/grafana/ssl/tls.key
+            extraSecretMounts:
+              - name: grafana-tls
+                secretName: grafana-tls
+                mountPath: /etc/grafana/ssl
+                readOnly: true
+            readinessProbe:
+              httpGet:
+                scheme: HTTPS
+                path: /api/health
+                port: 3000
+            livenessProbe:
+              httpGet:
+                scheme: HTTPS
+                path: /api/health
+                port: 3000
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/prometheus/configs
+      directory:
+        recurse: true
   syncPolicy:
     automated:
       selfHeal: true

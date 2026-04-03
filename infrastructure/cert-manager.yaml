@@ -22,6 +22,13 @@ spec:
             enabled: true
           config:
             enableGatewayAPI: true
+          prometheus:
+            enabled: true
+            servicemonitor:
+              enabled: true
+              labels:
+                release: prometheus
+          
     - repoURL: git@github.com:nmvinicius/k-stack.git
       targetRevision: HEAD
       path: infrastructure/cert-manager/configs

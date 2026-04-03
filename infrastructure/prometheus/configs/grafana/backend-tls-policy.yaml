@@ -1,0 +1,21 @@
+# BackendTLSPolicy instrui o NGINX Gateway Fabric a abrir uma conexão
+# TLS com o prometheus-grafana, verificando o cert com o CA interno do cluster.
+# Precisa estar no mesmo namespace do Service que está sendo protegido.
+apiVersion: gateway.networking.k8s.io/v1alpha3
+kind: BackendTLSPolicy
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: prometheus-grafana
+  validation:
+    caCertificateRefs:
+      - group: ""
+        kind: ConfigMap
+        name: cluster-internal-ca
+    hostname: prometheus-grafana.monitoring.svc.cluster.local
