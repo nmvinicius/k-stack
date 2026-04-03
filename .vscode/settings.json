@@ -4,6 +4,8 @@
         "argoproj",
         "finalizer",
         "grafana",
-        "prometheus"
+        "prometheus",
+        "restapi",
+        "stackgres"
     ]
 }

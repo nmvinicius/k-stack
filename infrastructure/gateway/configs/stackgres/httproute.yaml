@@ -1,0 +1,24 @@
+# Roteia HTTPS → stackgres-restapi (TLS re-encryption via BackendTLSPolicy)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: stackgres
+  namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: http-https-gateway
+      namespace: gateway-api
+      sectionName: https
+  hostnames:
+    - stackgres.k8s.local
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: stackgres-restapi
+          namespace: stackgres
+          port: 443

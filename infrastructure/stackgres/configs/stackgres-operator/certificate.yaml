@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: stackgres-restapi
+  namespace: stackgres
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  secretName: stackgres-web-tls
+  duration: 8760h
+  renewBefore: 720h
+  issuerRef:
+    name: cluster-internal-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - stackgres-restapi.stackgres.svc.cluster.local
+    - stackgres-restapi.stackgres.svc
+    - stackgres-restapi.stackgres
+    - stackgres-restapi
+    - stackgres.k8s.local
+  privateKey:
+    algorithm: ECDSA
+    size: 256

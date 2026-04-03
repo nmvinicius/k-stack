@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stackgres
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  destination:
+    namespace: stackgres
+    server: https://kubernetes.default.svc
+  sources:
+    - chart: stackgres-operator
+      repoURL: https://stackgres.io/downloads/stackgres-k8s/stackgres/helm/
+      targetRevision: 1.18.*
+      helm:
+        releaseName: stackgres-operator
+        valuesObject:
+          adminui:
+            service:
+              type: ClusterIP
+          cert:
+            createForWebApi: false
+            webSecretName: stackgres-web-tls
+            regenerateWebCert: false
+            regenerateWebRsa: false
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/stackgres/configs
+      directory:
+        recurse: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
