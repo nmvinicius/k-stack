@@ -8,13 +8,17 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   parentRefs:
-    - name: http-https-gateway
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: http-https-gateway
       namespace: gateway-api
       sectionName: https
   hostnames:
     - argocd.k8s.local
   rules:
     - backendRefs:
-        - name: argocd-server
+        - group: ""
+          kind: Service
+          name: argocd-server
           namespace: argocd
           port: 443
