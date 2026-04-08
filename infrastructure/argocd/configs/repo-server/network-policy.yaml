@@ -3,7 +3,8 @@ kind: NetworkPolicy
 metadata:
   name: argocd-allow-applicationset-to-repo-server
   namespace: argocd
-spec:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   podSelector:
     matchLabels:
       app.kubernetes.io/name: argocd-repo-server

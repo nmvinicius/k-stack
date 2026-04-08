@@ -4,7 +4,7 @@ metadata:
   name: stackgres-restapi
   namespace: stackgres
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   secretName: stackgres-web-tls
   duration: 8760h

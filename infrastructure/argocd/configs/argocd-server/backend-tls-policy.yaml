@@ -6,7 +6,8 @@ kind: BackendTLSPolicy
 metadata:
   name: argocd-server
   namespace: argocd
-spec:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   targetRefs:
     - group: ""
       kind: Service

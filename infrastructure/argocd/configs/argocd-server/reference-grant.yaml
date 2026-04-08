@@ -5,7 +5,8 @@ kind: ReferenceGrant
 metadata:
   name: argocd-server
   namespace: argocd
-spec:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   from:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
