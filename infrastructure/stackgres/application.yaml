@@ -31,10 +31,10 @@ spec:
             service:
               type: ClusterIP
           cert:
-            createForWebApi: false
+            createForWebApi: true
             webSecretName: stackgres-web-tls
-            regenerateWebCert: false
-            regenerateWebRsa: false
+            regenerateWebCert: true
+            regenerateWebRsa: true
     - repoURL: git@github.com:nmvinicius/k-stack.git
       targetRevision: HEAD
       path: infrastructure/stackgres/configs
