@@ -27,6 +27,13 @@ spec:
           nginxGateway:
             gwAPIExperimentalFeatures:
               enable: true
+          prometheus:
+            create: true
+            serviceMonitor:
+              create: true
+              # Verifique se o namespace do seu prometheus está correto aqui
+              labels:
+                release: prometheus
     - repoURL: git@github.com:nmvinicius/k-stack.git
       targetRevision: HEAD
       path: infrastructure/gateway/configs

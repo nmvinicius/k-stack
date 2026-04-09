@@ -27,6 +27,11 @@ spec:
               requests:
                 cpu: "200m"
                 memory: "512Mi"
+          prometheus:
+            enabled: true
+            operator: true
+            grafana:
+              enabled: true
           adminui:
             service:
               type: ClusterIP
