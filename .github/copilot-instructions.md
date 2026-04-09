@@ -35,23 +35,26 @@ Para adicionar um componente (ex: `stackgres`), seguir este padrão:
 
 ```
 infrastructure/
-├── stackgres.yaml            # Application multi-source (wave apropriado)
 └── stackgres/
-    └── configs/
-        └── stackgres-server/         # Pasta = conceito/serviço
-            ├── certificate.yaml      # Kind como nome do arquivo
-            ├── backend-tls-policy.yaml
-            └── reference-grant.yaml  # Todos com sync-wave: "1"
+  ├── application.yaml      # Application multi-source (wave apropriado)
+  └── configs/
+    └── stackgres-server/         # Pasta = conceito/serviço
+      ├── certificate.yaml      # Kind como nome do arquivo
+      ├── backend-tls-policy.yaml
+      └── reference-grant.yaml  # Todos com sync-wave: "1"
 ```
 
-Se o componente precisa de HTTPRoute, adicionar em `infrastructure/gateway/configs/`:
+Se o componente precisa de HTTPRoute, adicionar no `configs/` do próprio componente (não em `gateway/configs/`):
 
 ```
-infrastructure/gateway/configs/
-└── stackgres/
-    ├── httproute.yaml            # Kind padrão — sem sufixo
-    └── httproute-redirect.yaml   # Variante — com sufixo
+infrastructure/stackgres/configs/
+└── stackgres-operator/
+  ├── httproute.yaml            # Kind padrão — sem sufixo
+  └── httproute-redirect.yaml   # Variante — com sufixo
 ```
+
+`infrastructure/gateway/configs/` deve conter apenas recursos do domínio gateway
+(Gateways, certs e PKI interna do NGINX Gateway Fabric).
 
 ### Template de Application ArgoCD
 
@@ -130,7 +133,7 @@ configs/
 - **`ignoreDifferences`**: necessário para recursos que sofrem drift gerenciado externamente (ex: `cert-generator` do gateway). Adicionar quando um resource controller sobrescreve campos constantemente.
 - **Ordem de sources**: ao usar OCI registries como `repoURL`, o campo `chart` é obrigatório; não usar `path`.
 - **AppProject antes de tudo**: qualquer nova Application deve usar `project: infrastructure`; só a root app usa `project: default`.
-- **`recurse: false`** na root app: o diretório `infrastructure/` é lido sem recursão — subdiretórios (`cert-manager/configs/`) são gerenciados via `sources` das Applications.
+- **Root app recursiva com filtro**: usar `recurse: true` com `include: "**/application.yaml"` para descobrir apenas Application/AppProject dos componentes.
 - **`directory.recurse: true`** nas sources Git das Applications: necessário para ler concept folders dentro de `configs/`.
 - **`sync-wave: "1"`** em resources de configs: garante que o controller do Helm chart esteja healthy antes de aplicar configs (ClusterIssuers, Certificates, etc.).
 - **ReferenceGrant**: fica no namespace do destino (ex: `argocd/configs/argocd-server/reference-grant.yaml`), não no namespace do gateway.

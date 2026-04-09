@@ -14,6 +14,10 @@ Padrão **App-of-Apps** com sync waves para orquestrar a ordem de deploy:
 | `-2` | `gateway` | CRDs + NGINX Gateway Fabric + configs (multi-source) |
 | `-1` | `trust-manager` | trust-manager + CA bundle (multi-source) |
 | `0` | `argocd` | Certificates, BackendTLSPolicy, NetworkPolicy |
+| `1` | `prometheus` | kube-prometheus-stack + configs (multi-source) |
+| `2` | `stackgres` | stackgres-operator + configs (multi-source) |
+
+Mapeamento e criterio de validacao dos waves: `SYNC-WAVES.md`.
 
 ## Estrutura do Repositório
 
@@ -22,10 +26,11 @@ bootstrap/
 └── root-app.yaml                        # Único apply necessário
 
 infrastructure/
-├── project.yaml                         # AppProject (wave -5)
+├── project/
+│   └── application.yaml                 # AppProject (wave -5)
 │
-├── cert-manager.yaml                    # Multi-source: Helm + configs (wave -3)
 ├── cert-manager/
+│   ├── application.yaml                 # Multi-source: Helm + configs (wave -3)
 │   └── configs/
 │       ├── selfsigned-issuer/
 │       │   └── cluster-issuer.yaml
@@ -33,12 +38,9 @@ infrastructure/
 │           ├── certificate-ca.yaml
 │           └── cluster-issuer.yaml
 │
-├── gateway.yaml                         # Multi-source: CRDs + Helm + configs (wave -2)
 ├── gateway/
+│   ├── application.yaml                 # Multi-source: CRDs + Helm + configs (wave -2)
 │   └── configs/
-│       ├── argocd/
-│       │   ├── httproute.yaml
-│       │   └── httproute-redirect.yaml
 │       ├── gateway-tls/
 │       │   └── certificate.yaml
 │       ├── http-https-gateway/
@@ -50,21 +52,45 @@ infrastructure/
 │       └── postgres-gateway/
 │           └── gateway.yaml
 │
-├── trust-manager.yaml                   # Multi-source: Helm + configs (wave -1)
 ├── trust-manager/
+│   ├── application.yaml                 # Multi-source: Helm + configs (wave -1)
 │   └── configs/
 │       └── cluster-internal-ca/
 │           └── bundle.yaml
 │
-├── argocd.yaml                          # Configs (wave 0)
-└── argocd/
+├── argocd/
+│   ├── application.yaml                 # Configs (wave 0)
+│   └── configs/
+│       ├── argocd-server/
+│       │   ├── httproute.yaml
+│       │   ├── httproute-redirect.yaml
+│       │   ├── certificate.yaml
+│       │   ├── backend-tls-policy.yaml
+│       │   └── reference-grant.yaml
+│       └── repo-server/
+│           └── network-policy.yaml
+│
+├── prometheus/
+│   ├── application.yaml
+│   └── configs/
+│       ├── grafana/
+│       │   ├── certificate.yaml
+│       │   ├── backend-tls-policy.yaml
+│       │   ├── reference-grant.yaml
+│       │   ├── httproute.yaml
+│       │   └── httproute-redirect.yaml
+│       └── nginx-gateway-fabric/
+│           └── pod-monitor.yaml
+│
+└── stackgres/
+    ├── application.yaml
     └── configs/
-        ├── argocd-server/
-        │   ├── certificate.yaml
-        │   ├── backend-tls-policy.yaml
-        │   └── reference-grant.yaml
-        └── repo-server/
-            └── network-policy.yaml
+        └── stackgres-operator/
+            ├── certificate.yaml
+            ├── backend-tls-policy.yaml
+            ├── reference-grant.yaml
+            ├── httproute.yaml
+            └── httproute-redirect.yaml
 ```
 
 ## Pré-requisitos
@@ -80,6 +106,8 @@ Um único comando bootstrapa toda a infraestrutura:
 ```bash
 kubectl apply -f bootstrap/root-app.yaml
 ```
+
+A root app varre `infrastructure/` recursivamente, mas filtra apenas `**/application.yaml`.
 
 O ArgoCD irá, em ordem:
 1. Criar o AppProject `infrastructure`
@@ -106,11 +134,13 @@ O ArgoCD irá, em ordem:
 - Features experimentais do Gateway API habilitadas
 - Gateways: HTTP (80), HTTPS (443), PostgreSQL (5432/5433)
 - TLS termination com certificado wildcard `*.k8s.local`
+- `gateway/configs` contém apenas recursos do domínio gateway (Gateways, TLS e PKI interna do NGF)
 
 ### ArgoCD
 - TLS re-encryption: Gateway → TLS → argocd-server
 - BackendTLSPolicy valida cert com CA interno
 - Network policy para applicationset-controller → repo-server
+- HTTPRoutes ficam em `argocd/configs/argocd-server/` para manter isolamento por app
 
 ## Convenção de nomes
 
