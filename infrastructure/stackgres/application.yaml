@@ -19,6 +19,14 @@ spec:
       helm:
         releaseName: stackgres-operator
         valuesObject:
+          stackgres-operator:
+            resources:
+              limits:
+                cpu: "500m"
+                memory: "1Gi"
+              requests:
+                cpu: "200m"
+                memory: "512Mi"
           adminui:
             service:
               type: ClusterIP
@@ -37,5 +45,6 @@ spec:
       selfHeal: true
       prune: true
     syncOptions:
+      - Limit=1
       - CreateNamespace=true
       - ServerSideApply=true
