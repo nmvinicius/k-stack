@@ -1,0 +1,417 @@
+{
+  "version": "1.0.0",
+  "projectName": "k8s",
+  "diagramId": "355860dc-c23c-4ac8-8bed-3804b725c481",
+  "diagramUrl": "https://ark95.io/dashboard?diagram=355860dc-c23c-4ac8-8bed-3804b725c481",
+  "generatedAt": "2026-04-13T13:57:21.401Z",
+  "nodes": [
+    {
+      "id": "argocd-controller",
+      "label": "ArgoCD Controller",
+      "type": "service",
+      "tech": "Kubernetes/GitOps",
+      "file_origin": "vscode-workspace/bootstrap/root-app.yaml"
+    },
+    {
+      "id": "argocd-applicationset-controller",
+      "label": "ArgoCD ApplicationSet Controller",
+      "type": "service",
+      "tech": "Kubernetes/GitOps",
+      "file_origin": "vscode-workspace/infrastructure/argocd/configs/repo-server/network-policy.yaml"
+    },
+    {
+      "id": "argocd-repo-server",
+      "label": "ArgoCD Repo Server",
+      "type": "service",
+      "tech": "Kubernetes/GitOps",
+      "file_origin": "vscode-workspace/infrastructure/argocd/configs/repo-server/network-policy.yaml"
+    },
+    {
+      "id": "cert-manager",
+      "label": "Cert-Manager",
+      "type": "service",
+      "tech": "Kubernetes/Certificates",
+      "file_origin": "vscode-workspace/infrastructure/cert-manager/application.yaml"
+    },
+    {
+      "id": "nginx-gateway-fabric",
+      "label": "NGINX Gateway Fabric",
+      "type": "service",
+      "tech": "Kubernetes/API Gateway",
+      "file_origin": "vscode-workspace/infrastructure/gateway/application.yaml"
+    },
+    {
+      "id": "openbao",
+      "label": "OpenBao Secrets Manager",
+      "type": "service",
+      "tech": "Kubernetes/Secrets Management",
+      "file_origin": "vscode-workspace/infrastructure/openbao/application.yaml"
+    },
+    {
+      "id": "prometheus",
+      "label": "Prometheus Monitoring",
+      "type": "service",
+      "tech": "Kubernetes/Monitoring",
+      "file_origin": "vscode-workspace/infrastructure/prometheus/application.yaml"
+    },
+    {
+      "id": "grafana",
+      "label": "Grafana Dashboard",
+      "type": "service",
+      "tech": "Kubernetes/Monitoring",
+      "file_origin": "vscode-workspace/infrastructure/prometheus/application.yaml"
+    },
+    {
+      "id": "stackgres-operator",
+      "label": "StackGres Operator",
+      "type": "service",
+      "tech": "Kubernetes/PostgreSQL",
+      "file_origin": "vscode-workspace/infrastructure/stackgres/application.yaml"
+    },
+    {
+      "id": "stackgres-postgres-cluster",
+      "label": "StackGres PostgreSQL Cluster",
+      "type": "database",
+      "tech": "PostgreSQL",
+      "file_origin": "vscode-workspace/infrastructure/stackgres/application.yaml"
+    },
+    {
+      "id": "trust-manager",
+      "label": "Trust Manager",
+      "type": "service",
+      "tech": "Kubernetes/Certificates",
+      "file_origin": "vscode-workspace/infrastructure/trust-manager/application.yaml"
+    },
+    {
+      "id": "kubernetes-api",
+      "label": "Kubernetes API Server",
+      "type": "external",
+      "tech": "Kubernetes",
+      "file_origin": "N/A"
+    },
+    {
+      "id": "k-stack-git-repo",
+      "label": "k-stack Git Repository",
+      "type": "external",
+      "tech": "Git/GitHub",
+      "file_origin": "vscode-workspace/bootstrap/root-app.yaml"
+    },
+    {
+      "id": "jetstack-helm-repo",
+      "label": "Jetstack Helm Repository",
+      "type": "external",
+      "tech": "Helm",
+      "file_origin": "vscode-workspace/infrastructure/cert-manager/application.yaml"
+    },
+    {
+      "id": "nginx-gateway-fabric-helm-repo",
+      "label": "NGINX Gateway Fabric Helm Repo",
+      "type": "external",
+      "tech": "Helm",
+      "file_origin": "vscode-workspace/infrastructure/gateway/application.yaml"
+    },
+    {
+      "id": "nginx-gateway-fabric-oci-helm-repo",
+      "label": "NGINX Gateway Fabric OCI Helm Repo",
+      "type": "external",
+      "tech": "Helm OCI",
+      "file_origin": "vscode-workspace/infrastructure/gateway/application.yaml"
+    },
+    {
+      "id": "openbao-helm-repo",
+      "label": "OpenBao Helm Repository",
+      "type": "external",
+      "tech": "Helm",
+      "file_origin": "vscode-workspace/infrastructure/openbao/application.yaml"
+    },
+    {
+      "id": "prometheus-helm-repo",
+      "label": "Prometheus Helm Repository",
+      "type": "external",
+      "tech": "Helm",
+      "file_origin": "vscode-workspace/infrastructure/prometheus/application.yaml"
+    },
+    {
+      "id": "stackgres-helm-repo",
+      "label": "StackGres Helm Repository",
+      "type": "external",
+      "tech": "Helm",
+      "file_origin": "vscode-workspace/infrastructure/stackgres/application.yaml"
+    },
+    {
+      "id": "cluster-internal-ca",
+      "label": "Cluster Internal CA",
+      "type": "service",
+      "tech": "Cert-Manager/PKI",
+      "file_origin": "vscode-workspace/infrastructure/cert-manager/configs/cluster-internal-ca/certificate-ca.yaml"
+    },
+    {
+      "id": "selfsigned-issuer",
+      "label": "Self-Signed Issuer",
+      "type": "service",
+      "tech": "Cert-Manager/PKI",
+      "file_origin": "vscode-workspace/infrastructure/cert-manager/configs/selfsigned-issuer/cluster-issuer.yaml"
+    },
+    {
+      "id": "client-browser",
+      "label": "Client Browser",
+      "type": "client",
+      "tech": "Web Browser",
+      "file_origin": "N/A"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ArgoCD Controller",
+      "target": "k-stack Git Repository",
+      "subtype": "http_get",
+      "protocol": "SSH"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "Jetstack Helm Repository",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "NGINX Gateway Fabric Helm Repo",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "NGINX Gateway Fabric OCI Helm Repo",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "OpenBao Helm Repository",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "Prometheus Helm Repository",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "StackGres Helm Repository",
+      "subtype": "http_get",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "ArgoCD ApplicationSet Controller",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "ArgoCD Controller",
+      "target": "ArgoCD Repo Server",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "ArgoCD ApplicationSet Controller",
+      "target": "ArgoCD Repo Server",
+      "subtype": "http_post",
+      "protocol": "TCP"
+    },
+    {
+      "source": "ArgoCD Repo Server",
+      "target": "k-stack Git Repository",
+      "subtype": "http_get",
+      "protocol": "SSH"
+    },
+    {
+      "source": "Client Browser",
+      "target": "NGINX Gateway Fabric",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "ArgoCD Controller",
+      "subtype": "proxy",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "OpenBao Secrets Manager",
+      "subtype": "proxy",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "Grafana Dashboard",
+      "subtype": "proxy",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "StackGres Operator",
+      "subtype": "proxy",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "Cluster Internal CA",
+      "subtype": "read",
+      "protocol": "Internal"
+    },
+    {
+      "source": "NGINX Gateway Fabric",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "Self-Signed Issuer",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "Cluster Internal CA",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "NGINX Gateway Fabric",
+      "subtype": "write",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "ArgoCD Controller",
+      "subtype": "write",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "OpenBao Secrets Manager",
+      "subtype": "write",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "Grafana Dashboard",
+      "subtype": "write",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cert-Manager",
+      "target": "StackGres Operator",
+      "subtype": "write",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Self-Signed Issuer",
+      "target": "Cert-Manager",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cluster Internal CA",
+      "target": "Self-Signed Issuer",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Cluster Internal CA",
+      "target": "Trust Manager",
+      "subtype": "operations",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Trust Manager",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "Trust Manager",
+      "target": "Cluster Internal CA",
+      "subtype": "read",
+      "protocol": "Internal"
+    },
+    {
+      "source": "Prometheus Monitoring",
+      "target": "NGINX Gateway Fabric",
+      "subtype": "http_get",
+      "protocol": "HTTP"
+    },
+    {
+      "source": "Prometheus Monitoring",
+      "target": "Grafana Dashboard",
+      "subtype": "http_get",
+      "protocol": "HTTP"
+    },
+    {
+      "source": "Prometheus Monitoring",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "Prometheus Monitoring",
+      "target": "StackGres Operator",
+      "subtype": "http_get",
+      "protocol": "HTTP"
+    },
+    {
+      "source": "Prometheus Monitoring",
+      "target": "Cert-Manager",
+      "subtype": "http_get",
+      "protocol": "HTTP"
+    },
+    {
+      "source": "Grafana Dashboard",
+      "target": "Prometheus Monitoring",
+      "subtype": "http_get",
+      "protocol": "HTTP"
+    },
+    {
+      "source": "Grafana Dashboard",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "StackGres Operator",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    },
+    {
+      "source": "StackGres Operator",
+      "target": "StackGres PostgreSQL Cluster",
+      "subtype": "operations",
+      "protocol": "TCP"
+    },
+    {
+      "source": "OpenBao Secrets Manager",
+      "target": "Kubernetes API Server",
+      "subtype": "crud",
+      "protocol": "HTTPS"
+    }
+  ]
+}
