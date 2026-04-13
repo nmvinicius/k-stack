@@ -1,0 +1,23 @@
+# Redireciona HTTP → HTTPS para o OpenBao
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: openbao-redirect
+  namespace: gateway-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: http-https-gateway
+      namespace: gateway-api
+      sectionName: http
+  hostnames:
+    - openbao.k8s.local
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301

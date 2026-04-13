@@ -4,6 +4,7 @@
         "argoproj",
         "finalizer",
         "grafana",
+        "openbao",
         "prometheus",
         "restapi",
         "stackgres"

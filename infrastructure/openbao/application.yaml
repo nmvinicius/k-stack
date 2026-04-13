@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openbao
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: infrastructure
+  destination:
+    namespace: openbao
+    server: https://kubernetes.default.svc
+  sources:
+    - chart: openbao
+      repoURL: https://openbao.github.io/openbao-helm
+      targetRevision: 0.4.0
+      helm:
+        releaseName: openbao
+        valuesObject:
+          server:
+            # Configuração de Alta Disponibilidade com Raft (Independente de Cloud)
+            ha:
+              enabled: true
+              replicas: 3
+              raft:
+                enabled: true
+                setNodeId: true
+                config: |
+                  ui = true
+                  listener "tcp" {
+                    tls_disable = 0
+                    address = "[::]:8200"
+                    cluster_address = "[::]:8201"
+                    tls_cert_file = "/openbao/userconfig/openbao-server-tls/tls.crt"
+                    tls_key_file  = "/openbao/userconfig/openbao-server-tls/tls.key"
+                  }
+                  storage "raft" {
+                    path = "/openbao/data"
+                  }
+            # Montagem do certificado gerado pelo cert-manager
+            extraVolumes:
+              - name: userconfig-openbao-server-tls
+                secret:
+                  secretName: openbao-server-tls
+            extraVolumeMounts:
+              - name: userconfig-openbao-server-tls
+                mountPath: /openbao/userconfig/openbao-server-tls
+                readOnly: true
+          ui:
+            enabled: true
+            serviceType: ClusterIP
+    - repoURL: git@github.com:nmvinicius/k-stack.git
+      targetRevision: HEAD
+      path: infrastructure/openbao/configs
+      directory:
+        recurse: true
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
